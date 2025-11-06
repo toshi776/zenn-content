@@ -1,0 +1,54 @@
+---
+title: "【完全版】WSL2でのclasp認証＆GASデプロイエラー解決ガイド"
+emoji: "🔧"
+type: "tech"
+topics: ["clasp", "googleappsscript", "wsl2", "oauth", "環境構築"]
+published: true
+---
+
+## はじめに
+Google Apps ScriptをCLI管理できる`clasp`。
+しかし、WSL2などの新環境では認証が通らず苦戦することがあります。
+本記事では、clasp認証を完全に通し、デプロイまで成功させる手順を整理しました。
+
+## 実装内容
+- GCPプロジェクトの再作成
+- OAuth同意画面設定
+- Apps Script API有効化
+- `.clasp.json`設定修正
+- deploy.sh更新
+
+## 実装の詳細
+```bash
+# 新規プロジェクト作成
+gcloud projects create yukyu-kanri
+# API有効化
+gcloud services enable script.googleapis.com
+# 認証
+clasp login
+```
+
+```json
+{
+  "scriptId": "xxxx",
+  "projectId": "polynomial-net-477401-k0",
+  "rootDir": "."
+}
+```
+
+## 苦労した点・工夫した点
+- カスタムOAuthではスコープ不足で403エラー
+- 標準loginは全スコープ認可で安定
+- deploy.shをv2仕様に対応
+
+## 学び
+- `rootDir`を明示的に指定する
+- Apps Script APIを忘れず有効化
+- OAuth同意画面は「テストユーザー」設定を先に
+
+## 今後の展望
+- セットアップ自動化スクリプトをOSSとして公開予定
+
+## まとめ
+clasp認証は手順通り進めれば確実に成功する。
+この記事が環境移行時のトラブル解決の一助になれば幸いです。
